@@ -80,14 +80,12 @@ export default function MyMapPage() {
       <h1 className="text-2xl font-bold text-zinc-900">내 방문 지도</h1>
 
       {/* Map - visited museums highlighted */}
-      {process.env.NEXT_PUBLIC_KAKAO_APP_KEY && (
-        <div className="mt-6 h-80 w-full">
-          <KakaoMap
-            museums={allMuseums}
-            visitedMuseumIds={visitedMuseumIds}
-          />
-        </div>
-      )}
+      <div className="mt-6 h-80 w-full">
+        <KakaoMap
+          museums={allMuseums}
+          visitedMuseumIds={visitedMuseumIds}
+        />
+      </div>
 
       {/* Stats */}
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">

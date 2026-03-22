@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
-import { CATEGORY_LABELS, type Museum, type Program } from "@/types/database";
+import { CATEGORY_LABELS, type Museum, type Program, type MuseumCategory } from "@/types/database";
 import ReviewSection from "@/components/ReviewSection";
 import VisitButton from "@/components/VisitButton";
 import FavoriteButton from "@/components/FavoriteButton";
@@ -69,9 +69,9 @@ export default function MuseumDetailPage() {
         목록으로
       </Link>
 
-      {/* Hero image */}
-      <div className="relative h-64 w-full overflow-hidden rounded-xl bg-zinc-100 sm:h-80">
-        <img src={museum.image_url} alt={museum.name} className="h-full w-full object-cover" />
+      {/* Hero */}
+      <div className={`relative flex h-48 w-full items-center justify-center rounded-xl bg-gradient-to-br ${getGradient(museum.category)} sm:h-64`}>
+        <span className="text-7xl opacity-80">{getEmoji(museum.category)}</span>
         <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-sm font-semibold text-zinc-800">
           {CATEGORY_LABELS[museum.category]}
         </span>
@@ -90,16 +90,14 @@ export default function MuseumDetailPage() {
       </div>
 
       {/* Map */}
-      {process.env.NEXT_PUBLIC_KAKAO_APP_KEY && (
-        <div className="mt-6 h-64 w-full">
-          <KakaoMap
-            museums={[museum]}
-            center={{ lat: museum.lat, lng: museum.lng }}
-            level={3}
-            selectedMuseumId={museum.id}
-          />
-        </div>
-      )}
+      <div className="mt-6 h-64 w-full">
+        <KakaoMap
+          museums={[museum]}
+          center={{ lat: museum.lat, lng: museum.lng }}
+          level={3}
+          selectedMuseumId={museum.id}
+        />
+      </div>
 
       {/* Details grid */}
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -138,6 +136,32 @@ export default function MuseumDetailPage() {
       </section>
     </div>
   );
+}
+
+const gradientMap: Record<string, string> = {
+  history: "from-amber-400 to-orange-500",
+  science: "from-blue-400 to-cyan-500",
+  art: "from-purple-400 to-pink-500",
+  nature: "from-green-400 to-emerald-500",
+  children: "from-pink-400 to-rose-500",
+  experience: "from-orange-400 to-red-500",
+};
+
+const emojiMap: Record<string, string> = {
+  history: "🏛️",
+  science: "🔬",
+  art: "🎨",
+  nature: "🌿",
+  children: "👶",
+  experience: "🎭",
+};
+
+function getGradient(category: string) {
+  return gradientMap[category] ?? "from-zinc-400 to-zinc-500";
+}
+
+function getEmoji(category: string) {
+  return emojiMap[category] ?? "🏛️";
 }
 
 function InfoItem({

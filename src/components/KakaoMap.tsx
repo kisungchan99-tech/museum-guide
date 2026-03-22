@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import type { Museum } from "@/types/database";
 
 declare global {
@@ -27,55 +27,45 @@ export default function KakaoMap({
   visitedMuseumIds,
 }: Props) {
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<any>(null);
+  const [ready, setReady] = useState(false);
 
+  // Wait for kakao SDK to be available
   useEffect(() => {
-    const appKey = process.env.NEXT_PUBLIC_KAKAO_APP_KEY;
-    if (!appKey || !mapRef.current) return;
-
-    // Load Kakao Maps SDK
-    if (window.kakao?.maps) {
-      initMap();
-      return;
+    function check() {
+      if (window.kakao?.maps) {
+        window.kakao.maps.load(() => setReady(true));
+        return true;
+      }
+      return false;
     }
 
-    const script = document.createElement("script");
-    script.src = `//dapi.kakao.com/v2/maps/sdk.js?appkey=${appKey}&autoload=false`;
-    script.async = true;
-    script.onload = () => {
-      window.kakao.maps.load(() => {
-        initMap();
-      });
-    };
-    document.head.appendChild(script);
+    if (check()) return;
 
-    return () => {
-      if (document.head.contains(script)) {
-        document.head.removeChild(script);
-      }
-    };
-  }, [museums, center, selectedMuseumId]);
+    // Poll until SDK is loaded (from layout Script tag)
+    const interval = setInterval(() => {
+      if (check()) clearInterval(interval);
+    }, 200);
 
-  function initMap() {
-    if (!mapRef.current || !window.kakao?.maps) return;
+    return () => clearInterval(interval);
+  }, []);
+
+  // Init map
+  useEffect(() => {
+    if (!ready || !mapRef.current) return;
 
     const defaultCenter = center ?? { lat: 36.5, lng: 127.5 };
     const mapCenter = new window.kakao.maps.LatLng(defaultCenter.lat, defaultCenter.lng);
 
     const map = new window.kakao.maps.Map(mapRef.current, {
       center: mapCenter,
-      level: level,
+      level,
     });
 
-    mapInstanceRef.current = map;
-
-    // Add markers
     const infowindow = new window.kakao.maps.InfoWindow({ zIndex: 1 });
 
     museums.forEach((museum) => {
       const position = new window.kakao.maps.LatLng(museum.lat, museum.lng);
 
-      // Determine marker image based on visit status
       let markerImage;
       if (visitedMuseumIds?.has(museum.id)) {
         const imageSrc = "https://t1.daumcdn.net/localimg/localimages/07/mapapidoc/markerStar.png";
@@ -84,13 +74,12 @@ export default function KakaoMap({
       }
 
       const marker = new window.kakao.maps.Marker({
-        map: map,
-        position: position,
+        map,
+        position,
         title: museum.name,
         image: markerImage,
       });
 
-      // Info window on hover
       window.kakao.maps.event.addListener(marker, "mouseover", () => {
         infowindow.setContent(
           `<div style="padding:5px;font-size:12px;white-space:nowrap;">${museum.name}</div>`
@@ -102,7 +91,6 @@ export default function KakaoMap({
         infowindow.close();
       });
 
-      // Click to navigate
       window.kakao.maps.event.addListener(marker, "click", () => {
         if (onMarkerClick) {
           onMarkerClick(museum.id);
@@ -111,7 +99,6 @@ export default function KakaoMap({
         }
       });
 
-      // If this museum is selected, pan to it
       if (selectedMuseumId === museum.id) {
         map.setCenter(position);
         map.setLevel(3);
@@ -121,12 +108,12 @@ export default function KakaoMap({
         infowindow.open(map, marker);
       }
     });
-  }
+  }, [ready, museums, center, selectedMuseumId, visitedMuseumIds, level, onMarkerClick]);
 
   return (
     <div
       ref={mapRef}
-      className="h-full w-full rounded-xl border border-zinc-200"
+      className="h-full w-full rounded-xl border border-zinc-200 bg-zinc-100"
       style={{ minHeight: "300px" }}
     />
   );

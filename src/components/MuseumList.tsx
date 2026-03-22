@@ -62,11 +62,9 @@ export default function MuseumList() {
       />
 
       {/* Map */}
-      {process.env.NEXT_PUBLIC_KAKAO_APP_KEY && (
-        <div className="h-80 w-full">
-          <KakaoMap museums={filtered} />
-        </div>
-      )}
+      <div className="h-80 w-full">
+        <KakaoMap museums={filtered} />
+      </div>
 
       <p className="text-sm text-zinc-500">
         총 <span className="font-semibold text-zinc-900">{filtered.length}</span>개 박물관
