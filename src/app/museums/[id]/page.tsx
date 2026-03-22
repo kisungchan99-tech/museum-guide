@@ -69,18 +69,13 @@ export default function MuseumDetailPage() {
         목록으로
       </Link>
 
-      {/* Hero */}
-      <div className={`relative flex h-48 w-full items-center justify-center rounded-xl bg-gradient-to-br ${getGradient(museum.category)} sm:h-64`}>
-        <span className="text-7xl opacity-80">{getEmoji(museum.category)}</span>
-        <span className="absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-sm font-semibold text-zinc-800">
-          {CATEGORY_LABELS[museum.category]}
+      {/* Header */}
+      <div className={`rounded-xl bg-gradient-to-r ${getGradient(museum.category)} p-6 sm:p-8`}>
+        <span className="inline-flex rounded-md bg-white/20 px-3 py-1 text-xs font-semibold text-white">
+          {CATEGORY_LABELS[museum.category]} · {museum.region}
         </span>
-      </div>
-
-      {/* Info */}
-      <div className="mt-6">
-        <h1 className="text-2xl font-bold text-zinc-900 sm:text-3xl">{museum.name}</h1>
-        <p className="mt-2 text-zinc-600">{museum.description}</p>
+        <h1 className="mt-3 text-2xl font-bold text-white sm:text-3xl">{museum.name}</h1>
+        <p className="mt-3 text-sm leading-relaxed text-white/80">{museum.description}</p>
       </div>
 
       {/* Action buttons */}
@@ -147,21 +142,8 @@ const gradientMap: Record<string, string> = {
   experience: "from-orange-400 to-red-500",
 };
 
-const emojiMap: Record<string, string> = {
-  history: "🏛️",
-  science: "🔬",
-  art: "🎨",
-  nature: "🌿",
-  children: "👶",
-  experience: "🎭",
-};
-
 function getGradient(category: string) {
   return gradientMap[category] ?? "from-zinc-400 to-zinc-500";
-}
-
-function getEmoji(category: string) {
-  return emojiMap[category] ?? "🏛️";
 }
 
 function InfoItem({
