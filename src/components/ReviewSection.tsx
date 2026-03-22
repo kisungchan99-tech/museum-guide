@@ -131,7 +131,7 @@ export default function ReviewSection({ museumId }: Props) {
   async function handleDelete(reviewId: string) {
     if (!confirm("리뷰를 삭제하시겠습니까?")) return;
 
-    const { error } = await supabase.from("reviews").delete().eq("id", reviewId);
+    const { error } = await supabase.from("reviews").delete().eq("id", reviewId).eq("user_id", userId);
 
     if (error) {
       console.error("Review delete error:", error);
