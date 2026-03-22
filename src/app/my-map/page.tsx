@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabase";
 import type { Museum, Visit } from "@/types/database";
+import KakaoMap from "@/components/KakaoMap";
 import { CATEGORY_LABELS } from "@/types/database";
 import Link from "next/link";
 
@@ -77,6 +78,16 @@ export default function MyMapPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
       <h1 className="text-2xl font-bold text-zinc-900">내 방문 지도</h1>
+
+      {/* Map - visited museums highlighted */}
+      {process.env.NEXT_PUBLIC_KAKAO_APP_KEY && (
+        <div className="mt-6 h-80 w-full">
+          <KakaoMap
+            museums={allMuseums}
+            visitedMuseumIds={visitedMuseumIds}
+          />
+        </div>
+      )}
 
       {/* Stats */}
       <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">

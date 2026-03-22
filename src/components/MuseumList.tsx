@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabase";
 import type { Museum } from "@/types/database";
 import MuseumCard from "./MuseumCard";
 import MuseumFilter from "./MuseumFilter";
+import KakaoMap from "./KakaoMap";
 
 export default function MuseumList() {
   const [museums, setMuseums] = useState<Museum[]>([]);
@@ -59,6 +60,13 @@ export default function MuseumList() {
         onCategoryChange={setSelectedCategory}
         onSearchChange={setSearchQuery}
       />
+
+      {/* Map */}
+      {process.env.NEXT_PUBLIC_KAKAO_APP_KEY && (
+        <div className="h-80 w-full">
+          <KakaoMap museums={filtered} />
+        </div>
+      )}
 
       <p className="text-sm text-zinc-500">
         총 <span className="font-semibold text-zinc-900">{filtered.length}</span>개 박물관

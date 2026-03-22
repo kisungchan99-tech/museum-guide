@@ -8,6 +8,7 @@ import { CATEGORY_LABELS, type Museum, type Program } from "@/types/database";
 import ReviewSection from "@/components/ReviewSection";
 import VisitButton from "@/components/VisitButton";
 import FavoriteButton from "@/components/FavoriteButton";
+import KakaoMap from "@/components/KakaoMap";
 
 export default function MuseumDetailPage() {
   const params = useParams();
@@ -87,6 +88,18 @@ export default function MuseumDetailPage() {
         <VisitButton museumId={museum.id} />
         <FavoriteButton museumId={museum.id} />
       </div>
+
+      {/* Map */}
+      {process.env.NEXT_PUBLIC_KAKAO_APP_KEY && (
+        <div className="mt-6 h-64 w-full">
+          <KakaoMap
+            museums={[museum]}
+            center={{ lat: museum.lat, lng: museum.lng }}
+            level={3}
+            selectedMuseumId={museum.id}
+          />
+        </div>
+      )}
 
       {/* Details grid */}
       <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
